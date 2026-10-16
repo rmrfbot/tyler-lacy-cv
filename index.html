@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tyler Lacy — Electrical Engineering / Lunabotics Team Lead</title>
+<meta name="description" content="Tyler Lacy — Electrical Engineering student, U.S. Army veteran, and Team Lead for a NASA Lunabotics rover project. Interactive engineering portfolio and CV.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%230A1511'/%3E%3Ccircle cx='9' cy='16' r='2.6' fill='%23C9A24B'/%3E%3Cline x1='9' y1='16' x2='23' y2='16' stroke='%23C9A24B' stroke-width='2'/%3E%3Ccircle cx='23' cy='16' r='2.6' fill='%23FFB627'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root{
+    --bg:#08110e;
+    --bg-panel:#0d1a15;
+    --bg-card:rgba(15, 29, 23, 0.75);
+    --line:#1f3328;
+    --line-soft:#15251d;
+    --copper:#c9a24b;
+    --copper-dim:#7d652f;
+    --amber:#ffb627;
+    --emerald:#34d399;
+    --text:#eceae0;
+    --text-muted:#98ada0;
+    --text-dim:#5c6b62;
+    --radius:6px;
+    --content-w:920px;
+    --gutter-w:36px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 950px 550px at 15% -5%, rgba(201,162,75,0.09), transparent 65%),
+      radial-gradient(ellipse 700px 450px at 85% 25%, rgba(255,182,39,0.04), transparent 60%),
+      linear-gradient(rgba(33,51,40,0.18) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(33,51,40,0.18) 1px, transparent 1px),
+      var(--bg);
+    background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+    color:var(--text);
+    font-family:'IBM Plex Sans', -apple-system, sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  a{color:var(--copper); transition:color .15s ease;}
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--amber);
+    outline-offset:3px;
+  }
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  /* ---------- Top Navigation ---------- */
+  .topnav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(8,17,14,0.88);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .topnav-inner{
+    max-width:calc(var(--content-w) + var(--gutter-w) + 48px);
+    margin:0 auto;
+    padding:12px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+  }
+  .brand{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.04em;
+    color:var(--text);
+    text-decoration:none;
+    display:flex; align-items:center; gap:9px;
+    white-space:nowrap;
+  }
+  .brand .dot{
+    width:8px; height:8px; border-radius:50%; background:var(--amber);
+    box-shadow:0 0 8px 2px rgba(255,182,39,0.65);
+  }
+  .nav-right{display:flex; align-items:center; gap:18px; overflow-x:auto;}
+  .navlinks{display:flex; gap:18px; list-style:none; margin:0; padding:0; scrollbar-width:none;}
+  .navlinks::-webkit-scrollbar{display:none;}
+  .navlinks a{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--text-muted); text-decoration:none;
+    padding:4px 0; border-bottom:1.5px solid transparent;
+    transition:color .15s ease, border-color .15s ease;
+    white-space:nowrap;
+  }
+  .navlinks a:hover, .navlinks a.active{color:var(--copper); border-color:var(--copper);}
+  .term-trigger{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; color:var(--amber);
+    background:rgba(255,182,39,0.08);
+    border:1px solid rgba(255,182,39,0.35);
+    border-radius:4px; padding:5px 10px;
+    cursor:pointer; white-space:nowrap;
+    transition:background .15s, transform .1s;
+  }
+  .term-trigger:hover{background:rgba(255,182,39,0.16); transform:translateY(-1px);}
+
+  /* ---------- Layout Shell ---------- */
+  .board{max-width:calc(var(--content-w) + var(--gutter-w) + 48px); margin:0 auto; padding:0 24px;}
+
+  /* ---------- Hero with Solo Portrait ---------- */
+  .hero{
+    padding:64px 0 48px;
+    display:grid;
+    grid-template-columns: 1fr 240px;
+    gap:36px;
+    align-items:center;
+  }
+  @media (max-width:760px){
+    .hero{grid-template-columns:1fr; padding:44px 0 36px;}
+    .hero-portrait-wrap{order:-1; max-width:190px;}
+  }
+  .hero-trace{margin-bottom:16px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--copper); margin:0 0 10px;
+  }
+  h1.name{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:clamp(2.4rem, 5.5vw, 3.5rem);
+    line-height:1.04;
+    margin:0 0 10px;
+    letter-spacing:-0.015em;
+  }
+  .role-line{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:clamp(1.05rem, 2.2vw, 1.28rem);
+    color:var(--amber);
+    font-weight:500;
+    margin:0 0 18px;
+  }
+  .thesis{
+    max-width:60ch;
+    color:var(--text-muted);
+    font-size:1.01rem;
+    margin:0 0 24px;
+  }
+  .status-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--emerald);
+    border:1px solid rgba(52,211,153,0.35);
+    background:rgba(52,211,153,0.07);
+    border-radius:20px;
+    padding:6px 14px 6px 10px;
+    margin-bottom:26px;
+  }
+  .status-pill .blip{
+    width:7px; height:7px; border-radius:50%; background:var(--emerald);
+    animation:blip 1.8s ease-in-out infinite;
+  }
+  @keyframes blip{0%,100%{opacity:1;} 50%{opacity:.25;}}
+
+  .hero-actions{display:flex; flex-wrap:wrap; gap:12px; align-items:center;}
+  .btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px; letter-spacing:0.05em; text-transform:uppercase;
+    text-decoration:none;
+    padding:11px 18px;
+    border-radius:var(--radius);
+    display:inline-flex; align-items:center; gap:8px;
+    cursor:pointer;
+    transition:transform .12s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary{
+    background:var(--copper); color:#08110e; font-weight:600; border:1px solid var(--copper);
+    box-shadow:0 4px 20px rgba(201,162,75,0.22);
+  }
+  .btn-primary:hover{transform:translateY(-2px); background:#dab35c; color:#08110e;}
+  .btn-ghost{color:var(--text); border:1px solid var(--line); background:rgba(13,26,21,0.6);}
+  .btn-ghost:hover{border-color:var(--copper); color:var(--copper); transform:translateY(-1px);}
+
+  .contact-row{
+    display:flex; flex-wrap:wrap; gap:18px; margin-top:24px;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-muted);
+  }
+  .contact-row a{color:var(--text-muted); text-decoration:none; border-bottom:1px solid transparent;}
+  .contact-row a:hover{color:var(--copper); border-color:var(--copper-dim);}
+
+  /* Hero Portrait Card (Auto-Cropped Canvas) */
+  .hero-portrait-wrap{
+    position:relative;
+    border:1px solid var(--copper-dim);
+    border-radius:10px;
+    background:var(--bg-panel);
+    padding:8px;
+    box-shadow:0 16px 40px rgba(0,0,0,0.55), 0 0 25px rgba(201,162,75,0.1);
+  }
+  .hero-portrait-wrap::before{
+    content:"ID // TL-25U-EE";
+    display:block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    color:var(--copper);
+    letter-spacing:0.1em;
+    margin-bottom:6px;
+  }
+  .portrait-canvas{
+    width:100%;
+    aspect-ratio:4/5;
+    display:block;
+    border-radius:6px;
+    object-fit:cover;
+    background:#12221b;
+  }
+  .portrait-caption{
+    margin-top:6px;
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px; color:var(--text-dim);
+  }
+
+  /* ---------- Main / PCB Spine ---------- */
+  main{position:relative; padding-left:0;}
+  main .spine{
+    position:absolute; left:14px; top:8px; bottom:8px; width:1px;
+    background:linear-gradient(to bottom, transparent, var(--copper-dim) 4%, var(--line) 96%, transparent);
+    display:none;
+  }
+  @media (min-width:760px){
+    main{padding-left:var(--gutter-w);}
+    main .spine{display:block;}
+  }
+
+  .component{
+    position:relative;
+    padding:46px 0;
+    border-top:1px solid var(--line);
+    opacity:0; transform:translateY(16px);
+    transition:opacity .55s ease, transform .55s ease;
+  }
+  .component.in-view{opacity:1; transform:translateY(0);}
+  .component .via{display:none;}
+  @media (min-width:760px){
+    .component .via{
+      display:block;
+      position:absolute; left:calc(-1 * var(--gutter-w) + 10px); top:52px;
+      width:9px; height:9px; border-radius:50%;
+      background:var(--bg);
+      border:2px solid var(--copper-dim);
+      transition:border-color .3s, box-shadow .3s;
+    }
+    .component.in-view .via{
+      border-color:var(--amber);
+      box-shadow:0 0 8px rgba(255,182,39,0.6);
+    }
+  }
+
+  .ref-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; letter-spacing:0.12em;
+    color:var(--copper);
+    margin:0 0 6px;
+  }
+  h2.sec-title{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1.55rem; font-weight:600;
+    margin:0 0 22px;
+    color:var(--text);
+  }
+  .lede{color:var(--text-muted); max-width:68ch; margin:0 0 18px;}
+
+  /* Telemetry Stats Row */
+  .telemetry-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));
+    gap:12px;
+    margin-top:20px;
+  }
+  .stat-card{
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    transition:border-color .2s, transform .2s;
+  }
+  .stat-card:hover{border-color:var(--copper-dim); transform:translateY(-2px);}
+  .stat-val{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1.45rem; font-weight:700; color:var(--amber);
+    line-height:1.1;
+  }
+  .stat-lbl{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; color:var(--text-muted); margin-top:4px;
+  }
+
+  /* ---------- Interactive 3D CAD Workbench ---------- */
+  .cad-workbench{
+    background:linear-gradient(180deg, rgba(14,28,22,0.9), rgba(8,17,14,0.95));
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+    margin-bottom:32px;
+    box-shadow:0 14px 34px rgba(0,0,0,0.45);
+  }
+  .cad-toolbar{
+    display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center;
+    gap:12px; padding:12px 16px;
+    background:rgba(10,21,17,0.9);
+    border-bottom:1px solid var(--line);
+  }
+  .cad-title{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px; color:var(--copper);
+    display:flex; align-items:center; gap:8px;
+  }
+  .cad-controls{
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+    font-family:'IBM Plex Mono', monospace; font-size:11px;
+  }
+  .cad-btn{
+    background:var(--bg-panel); color:var(--text-muted);
+    border:1px solid var(--line); border-radius:4px;
+    padding:5px 10px; font-family:'IBM Plex Mono', monospace; font-size:11px;
+    cursor:pointer; transition:all .15s;
+  }
+  .cad-btn:hover, .cad-btn.active{
+    color:var(--amber); border-color:var(--copper); background:rgba(201,162,75,0.12);
+  }
+  .slider-wrap{display:flex; align-items:center; gap:6px; color:var(--text-muted);}
+  .slider-wrap input[type=range]{accent-color:var(--amber); width:90px; cursor:pointer;}
+  .cad-stage-wrap{position:relative; width:100%; height:360px;}
+  #rover-canvas{width:100%; height:100%; display:block; cursor:grab;}
+  #rover-canvas:active{cursor:grabbing;}
+  .cad-hud{
+    position:absolute; bottom:12px; left:14px; right:14px;
+    display:flex; justify-content:space-between; align-items:flex-end;
+    pointer-events:none;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--text-muted);
+  }
+  .cad-hud-box{
+    background:rgba(8,17,14,0.82);
+    border:1px solid var(--line);
+    padding:8px 12px; border-radius:4px;
+    backdrop-filter:blur(4px);
+  }
+
+  /* ---------- Project & Experience Cards ---------- */
+  .entry-card{
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px 22px;
+    margin-bottom:18px;
+    transition:border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+  }
+  .entry-card:hover{
+    border-color:var(--copper-dim);
+    transform:translateY(-2px);
+    box-shadow:0 10px 28px rgba(0,0,0,0.35);
+  }
+  .entry-card.highlighted{
+    border-color:var(--amber);
+    box-shadow:0 0 20px rgba(255,182,39,0.15);
+  }
+  .entry-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    flex-wrap:wrap; gap:6px 16px; margin-bottom:6px;
+  }
+  .entry-title{font-weight:600; font-size:1.05rem; color:var(--text);}
+  .entry-org{color:var(--copper); font-weight:500;}
+  .entry-meta{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--text-dim);
+    white-space:nowrap;
+  }
+  .entry-card ul{margin:10px 0 12px; padding-left:18px; color:var(--text-muted);}
+  .entry-card li{margin-bottom:6px; padding-left:2px;}
+  .entry-card li::marker{color:var(--copper);}
+  .tag-row{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;}
+  .tag{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px;
+    color:var(--copper); background:rgba(201,162,75,0.08);
+    border:1px solid rgba(201,162,75,0.25);
+    padding:2px 8px; border-radius:3px;
+  }
+
+  /* ---------- Engineering Field Gallery (Bento Grid) ---------- */
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(12, 1fr);
+    gap:14px;
+  }
+  .gal-item{
+    position:relative;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+    background:var(--bg-panel);
+    cursor:pointer;
+    display:flex; flex-direction:column;
+    transition:border-color .2s, transform .2s;
+  }
+  .gal-item:hover{border-color:var(--amber); transform:translateY(-3px);}
+  .gal-span-7{grid-column:span 7;}
+  .gal-span-5{grid-column:span 5;}
+  .gal-span-4{grid-column:span 4;}
+  @media (max-width:760px){
+    .gal-span-7, .gal-span-5, .gal-span-4{grid-column:span 12;}
+  }
+  .gal-media{
+    width:100%; height:240px; object-fit:cover; display:block;
+    background:#0c1813;
+    transition:transform .35s ease;
+  }
+  .gal-item:hover .gal-media{transform:scale(1.03);}
+  .gal-overlay{
+    padding:12px 14px;
+    background:rgba(10,21,17,0.94);
+    border-top:1px solid var(--line-soft);
+    flex-grow:1;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .gal-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px; color:var(--amber); text-transform:uppercase; letter-spacing:0.08em;
+  }
+  .gal-desc{font-size:0.88rem; color:var(--text); margin-top:4px; font-weight:500;}
+
+  /* ---------- BOM / Interactive Skills Table ---------- */
+  .filter-hint{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px; color:var(--amber); margin-bottom:12px;
+  }
+  .bom{width:100%; border-collapse:collapse; margin-top:4px;}
+  .bom th{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--text-dim); text-align:left; padding:0 0 10px; border-bottom:1px solid var(--line); font-weight:500;
+  }
+  .bom td{padding:14px 14px 14px 0; border-bottom:1px solid var(--line-soft); vertical-align:top;}
+  .bom tr{transition:background .15s; cursor:pointer;}
+  .bom tbody tr:hover, .bom tbody tr.active-filter{background:rgba(201,162,75,0.08);}
+  .bom .cat{font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--copper); white-space:nowrap; width:1%; padding-left:8px;}
+  .bom .items{color:var(--text-muted); font-size:0.95rem;}
+
+  /* ---------- Lightbox Modal ---------- */
+  .lightbox{
+    position:fixed; inset:0; z-index:100;
+    background:rgba(5,10,8,0.92);
+    backdrop-filter:blur(8px);
+    display:none; align-items:center; justify-content:center;
+    padding:24px;
+  }
+  .lightbox.open{display:flex;}
+  .lightbox-box{
+    max-width:860px; width:100%;
+    background:var(--bg-panel);
+    border:1px solid var(--copper);
+    border-radius:8px; overflow:hidden;
+    box-shadow:0 25px 60px rgba(0,0,0,0.8);
+  }
+  .lightbox-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 16px; border-bottom:1px solid var(--line);
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--copper);
+  }
+  .lightbox-body{
+    padding:16px; text-align:center; background:#060c0a;
+  }
+  .lightbox-body img, .lightbox-body canvas{
+    max-width:100%; max-height:68vh; border-radius:4px; object-fit:contain;
+  }
+  .lightbox-foot{
+    padding:12px 16px; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+    color:var(--text-muted); font-size:0.92rem;
+  }
+
+  /* ---------- Terminal Modal ---------- */
+  .term-modal{
+    position:fixed; inset:0; z-index:110;
+    background:rgba(5,10,8,0.85);
+    backdrop-filter:blur(6px);
+    display:none; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .term-modal.open{display:flex;}
+  .term-window{
+    width:100%; max-width:680px;
+    background:#070f0c;
+    border:1px solid var(--copper);
+    border-radius:8px;
+    box-shadow:0 24px 60px rgba(0,0,0,0.85);
+    overflow:hidden;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .term-bar{
+    background:#101f19; padding:10px 14px;
+    border-bottom:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:11.5px; color:var(--copper);
+  }
+  .term-output{
+    height:300px; overflow-y:auto; padding:16px;
+    font-size:12.5px; color:var(--text); line-height:1.55;
+  }
+  .term-output .cmd-echo{color:var(--amber);}
+  .term-output .sys-msg{color:var(--text-muted); margin-bottom:10px;}
+  .term-input-row{
+    display:flex; align-items:center; gap:8px;
+    padding:10px 16px; border-top:1px solid var(--line);
+    background:#0a1511;
+  }
+  .term-prompt{color:var(--emerald); font-size:12.5px;}
+  .term-input{
+    flex:1; background:transparent; border:none; color:var(--text);
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; outline:none;
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    margin-top:20px; padding:40px 0 60px;
+    display:flex; flex-wrap:wrap; gap:20px; justify-content:space-between; align-items:center;
+  }
+  footer .foot-links{
+    display:flex; gap:20px; flex-wrap:wrap;
+    font-family:'IBM Plex Mono', monospace; font-size:12px;
+  }
+  footer a{color:var(--text-muted); text-decoration:none;}
+  footer a:hover{color:var(--copper);}
+  footer .fine{color:var(--text-dim); font-family:'IBM Plex Mono', monospace; font-size:11px;}
+
+  @media print{
+    .topnav, .hero-actions, .status-pill, .cad-workbench, .term-trigger{display:none !important;}
+    body{background:#fff; color:#111;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav" aria-label="Section navigation">
+  <div class="topnav-inner">
+    <a class="brand" href="#top"><span class="dot" aria-hidden="true"></span>TYLER LACY</a>
+    <div class="nav-right">
+      <ul class="navlinks mono" id="navlinks">
+        <li><a href="#summary">Summary</a></li>
+        <li><a href="#projects">3D Lab &amp; Projects</a></li>
+        <li><a href="#gallery">Field Gallery</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#leadership">Leadership</a></li>
+        <li><a href="#education">Education</a></li>
+        <li><a href="#skills">BOM Skills</a></li>
+      </ul>
+      <button class="term-trigger" id="open-term-btn" title="Open Engineering Terminal (~)">[~] TERMINAL</button>
+    </div>
+  </div>
+</nav>
+
+<div class="board" id="top">
+
+  <header class="hero">
+    <div>
+      <svg class="hero-trace" width="120" height="16" viewBox="0 0 120 16" fill="none" aria-hidden="true">
+        <circle cx="8" cy="8" r="5" fill="#C9A24B"/>
+        <path id="trace-path" d="M13 8 H112" stroke="#C9A24B" stroke-width="1.5" stroke-dasharray="99" stroke-dashoffset="99"/>
+        <circle cx="112" cy="8" r="4" fill="#FFB627"/>
+      </svg>
+      <p class="kicker">Electrical Engineering · Systems &amp; Robotics</p>
+      <h1 class="name">Tyler Lacy</h1>
+      <p class="role-line">EE Student — Team Lead for a NASA Lunabotics Rover Project — U.S. Army Veteran</p>
+      <p class="thesis">I move between hands-on hardware — hydrostatically pressure-testing tools in the field, load-testing rover drivetrains in the shop — and the systems engineering discipline (SRR / PDR / CDR) required as a Team Lead for a NASA Lunabotics rover project. Seeking a research-focused engineering internship.</p>
+      <p class="status-pill"><span class="blip" aria-hidden="true"></span>Open to research-focused engineering internships</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="resume.pdf" download>↓ Download Résumé (PDF)</a>
+        <a class="btn btn-ghost" href="https://github.com/rmrfbot" target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="btn btn-ghost" href="https://linkedin.com/in/tyler-lacy-3b8148312" target="_blank" rel="noopener">LinkedIn ↗</a>
+        <a class="btn btn-ghost" href="#gallery">View Hardware Photos ↓</a>
+      </div>
+      <div class="contact-row">
+        <span>Cypress, TX</span>
+        <a href="mailto:tylacy@my.lonestar.edu">tylacy@my.lonestar.edu</a>
+        <a href="tel:+12817464637">(281) 746-4637</a>
+      </div>
+    </div>
+
+    <!-- Auto-Cropped Solo Portrait from ASME Officer Grid -->
+    <div class="hero-portrait-wrap" id="hero-portrait-card" title="Click to inspect or download cropped portrait" style="cursor:pointer;">
+      <canvas id="solo-portrait-canvas" class="portrait-canvas" width="400" height="500"></canvas>
+      <div class="portrait-caption">
+        <span>ASME OFFICER · LSC</span>
+        <span style="color:var(--amber);">[SOLO CROP]</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="spine" aria-hidden="true"></div>
+
+    <!-- SUMMARY -->
+    <section class="component" id="summary">
+      <span class="via" aria-hidden="true"></span>
+      <p class="ref-tag">U1 · CORE TELEMETRY</p>
+      <h2 class="sec-title">Summary</h2>
+      <p class="lede">Electrical Engineering student, U.S. Army veteran (Secret security clearance), and Team Lead for an award-winning NASA Lunabotics rover project. Combines hands-on electro-mechanical tool reliability, high-pressure fluid testing, and work-order/inventory management experience with C++, Python, and Linux embedded systems development. Proven track record driving campus STEM engagement and leading multidisciplinary teams through NASA systems engineering milestones (SRR / PDR / CDR).</p>
+
+      <div class="telemetry-grid">
+        <div class="stat-card">
+          <div class="stat-val">SRR / PDR / CDR</div>
+          <div class="stat-lbl">NASA Lunabotics Team Lead</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">10-Node Mesh</div>
+          <div class="stat-lbl">ESP32 + 915 MHz LoRa IoT</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">Secret</div>
+          <div class="stat-lbl">U.S. DoD Security Clearance</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">C++ / ROS 2</div>
+          <div class="stat-lbl">Embedded &amp; Autonomous Stack</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3D CAD WORKBENCH & PROJECTS -->
+    <section class="component" id="projects">
+      <span class="via" aria-hidden="true"></span>
+      <p class="ref-tag">Q1 · ACTIVE SYSTEMS &amp; 3D CAD</p>
+      <h2 class="sec-title">Research &amp; Engineering Projects</h2>
+
+      <!-- Interactive Three.js Rover CAD Assembly -->
+      <div class="cad-workbench">
+        <div class="cad-toolbar">
+          <div class="cad-title">
+            <span>◈ INTERACTIVE 3D CAD ASSEMBLY // LUNABOTICS EXCAVATION ROVER</span>
+          </div>
+          <div class="cad-controls">
+            <div class="slider-wrap">
+              <label for="explode-slider">EXPLODE:</label>
+              <input type="range" id="explode-slider" min="0" max="100" value="0">
+            </div>
+            <button class="cad-btn" id="btn-wireframe">WIREFRAME</button>
+            <button class="cad-btn active" id="btn-lidar">2D LiDAR CONE</button>
+            <button class="cad-btn active" id="btn-autorotate">AUTO-ORBIT</button>
+          </div>
+        </div>
+        <div class="cad-stage-wrap">
+          <canvas id="rover-canvas"></canvas>
+          <div class="cad-hud">
+            <div class="cad-hud-box">
+              <div style="color:var(--amber);">SUBSYSTEM SPEC</div>
+              <div id="cad-readout">4WD Aluminum Frame · 2D LiDAR Navigation · Relay Power Bus · Regolith Drum</div>
+            </div>
+            <div class="cad-hud-box">
+              Drag to Orbit · Scroll to Zoom
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="entry-card" data-tags="robotics systems hardware cpp cad">
+        <div class="entry-head">
+          <span><span class="entry-title">Team Lead — NASA Lunabotics Rover Project</span> — <span class="entry-org">Lone Star College</span></span>
+          <span class="entry-meta">2025 – Present</span>
+        </div>
+        <ul>
+          <li>Served as Team Lead for a multidisciplinary NASA Lunabotics rover project, guiding the team through NASA's Systems Requirement Review (SRR) and Preliminary / Critical Design Reviews (PDR / CDR) for an autonomous regolith excavator.</li>
+          <li>Engineered 4-motor drivetrain integration, structural frame load validation, and sensor power distribution across microcontrollers, relay buses, and 2D LiDAR navigation sensors.</li>
+          <li>Formulated risk mitigation matrices, managed build budget allocations exceeding $1,000, and led physical hardware integration testing protocols.</li>
+        </ul>
+        <div class="tag-row">
+          <span class="tag">Systems Engineering (SRR/PDR/CDR)</span>
+          <span class="tag">2D LiDAR</span>
+          <span class="tag">4WD Drivetrain</span>
+          <span class="tag">Fusion 360 / Onshape</span>
+        </div>
+      </div>
+
+      <div class="entry-card" data-tags="hardware cpp systems">
+        <div class="entry-head">
+          <span><span class="entry-title">Project Lead</span> — <span class="entry-org">NASA / Campus ESP32 IoT Solar &amp; HVAC Mesh Network</span></span>
+          <span class="entry-meta">In Progress</span>
+        </div>
+        <ul>
+          <li>Architected a 10-node off-grid LoRa (915 MHz) / ESP32 mesh network across campus with the Computer Science Club to correlate solar radiation with indoor HVAC power draw.</li>
+          <li>Programmed low-power C++ firmware with dynamic multi-hop routing, sensor polling, and automated telemetry transmission to an edge gateway to optimize campus energy consumption.</li>
+        </ul>
+        <div class="tag-row">
+          <span class="tag">ESP32</span>
+          <span class="tag">LoRa 915 MHz</span>
+          <span class="tag">Embedded C++</span>
+          <span class="tag">Mesh Networking</span>
+        </div>
+      </div>
+
+      <div class="entry-card" data-tags="robotics cpp">
+        <div class="entry-head">
+          <span><span class="entry-title">Autonomous Drive Developer</span> — <span class="entry-org">VEX U Robotics Platform</span></span>
+          <span class="entry-meta">2025</span>
+        </div>
+        <ul>
+          <li>Developed modular C++ drivetrain control algorithms for a 6-wheel tank-style robot chassis competing against top university teams internationally.</li>
+          <li>Programmed precise 15-second autonomous routines and tuned PID velocity response curves for driver control under match constraints.</li>
+        </ul>
+        <div class="tag-row">
+          <span class="tag">C++</span>
+          <span class="tag">PID Control</span>
+          <span class="tag">Autonomous Navigation</span>
+        </div>
+      </div>
+
+      <div class="entry-card" data-tags="testing qa">
+        <div class="entry-head">
+          <span><span class="entry-title">Fluid System Pressure Testing &amp; Tool Reliability</span> — <span class="entry-org">Weatherford International / Independent</span></span>
+          <span class="entry-meta">2022 – 2024</span>
+        </div>
+        <ul>
+          <li>Executed hydrostatic pressure testing protocols up to rated limits on high-pressure fluid tools to guarantee leak-free seal integrity prior to field deployment.</li>
+          <li>Logged equipment maintenance, part teardowns, and certification records via digital work order systems while tracking staging inventory across product lines.</li>
+        </ul>
+        <div class="tag-row">
+          <span class="tag">Hydrostatic Testing</span>
+          <span class="tag">Seal Integrity</span>
+          <span class="tag">ERP / SAP</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- HARDWARE & LEADERSHIP GALLERY -->
+    <section class="component" id="gallery">
+      <span class="via" aria-hidden="true"></span>
+      <p class="ref-tag">IMG · HARDWARE &amp; FIELD LOG</p>
+      <h2 class="sec-title">Engineering &amp; Leadership Gallery</h2>
+      <p class="lede">Click any frame to inspect full-resolution hardware builds, robotics competitions, and ASME leadership outreach.</p>
+
+      <div class="gallery-grid">
+        <!-- 1. Enhanced ASME Table Photo -->
+        <div class="gal-item gal-span-7" data-title="ASME & NASA Lunabotics Recruitment Table — Lone Star College–CyFair" data-type="canvas-table">
+          <canvas id="enhanced-table-canvas" class="gal-media" width="800" height="600"></canvas>
+          <div class="gal-overlay">
+            <span class="gal-tag">ASME LEADERSHIP · ENHANCED PORTRAIT</span>
+            <div class="gal-desc">Leading campus STEM outreach &amp; showcasing 3D-printed rover prototypes at LSC–CyFair</div>
+          </div>
+        </div>
+
+        <!-- 2. Rover Chassis Load Test -->
+        <div class="gal-item gal-span-5" data-title="Lunabotics Rover Drivetrain & Structural Load Testing" data-img="A3C88F91-DE6B-4FBD-B175-B4AAB7086DE0-1.jpg">
+          <img class="gal-media" src="A3C88F91-DE6B-4FBD-B175-B4AAB7086DE0-1.jpg" alt="Tyler performing structural load testing on the 4-wheel rover chassis" loading="lazy">
+          <div class="gal-overlay">
+            <span class="gal-tag">LUNABOTICS ROVER · CHASSIS LOAD TEST</span>
+            <div class="gal-desc">Full body-weight structural test on 4-motor rover wheel hub &amp; relay power deck</div>
+          </div>
+        </div>
+
+        <!-- 3. Boston Dynamics Spot -->
+        <div class="gal-item gal-span-4" data-title="Quadruped Robotics & Manipulator Inspection (Boston Dynamics Spot)" data-img="bd4.jpg">
+          <img class="gal-media" src="bd4.jpg" alt="Tyler with Boston Dynamics Spot robot" loading="lazy">
+          <div class="gal-overlay">
+            <span class="gal-tag">ROBOTICS SYMPOSIUM</span>
+            <div class="gal-desc">Hands-on inspection with Boston Dynamics Spot &amp; 6-DOF payload arm</div>
+          </div>
+        </div>
+
+        <!-- 4. VEX U Controller -->
+        <div class="gal-item gal-span-4" data-title="VEX U Autonomous & Driver Control Testing" data-img="bd1.jpg">
+          <img class="gal-media" src="bd1.jpg" alt="Tyler piloting VEX U robot at competition" loading="lazy">
+          <div class="gal-overlay">
+            <span class="gal-tag">VEX U COMPETITION</span>
+            <div class="gal-desc">Live PID velocity tuning &amp; teleop testing on competition floor</div>
+          </div>
+        </div>
+
+        <!-- 5. 3D CAD Modeling -->
+        <div class="gal-item gal-span-4" data-title="3D CAD Isometric Component Modeling" data-img="74357c1a-4a07-49cd-b413-bfc56f5bfa26.jpg">
+          <img class="gal-media" src="74357c1a-4a07-49cd-b413-bfc56f5bfa26.jpg" alt="3D CAD isometric view of interlocking mechanical components" loading="lazy">
+          <div class="gal-overlay">
+            <span class="gal-tag">CAD / CAM DESIGN</span>
+            <div class="gal-desc">Isometric parametric modeling of interlocking mechanical teeth</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFESSIONAL EXPERIENCE -->
+    <section class="component" id="experience">
+      <span class="via" aria-hidden="true"></span>
+      <p class="ref-tag">J1 · FIELD INTERFACE</p>
+      <h2 class="sec-title">Professional Experience</h2>
+
+      <div class="entry-card" data-tags="testing qa hardware">
+        <div class="entry-head">
+          <span><span class="entry-title">R&amp;M Technician III</span> — <span class="entry-org">Weatherford International</span></span>
+          <span class="entry-meta">Odessa, TX · 2022 – 2024</span>
+        </div>
+        <ul>
+          <li>Inspected, redressed O-rings and threads, and hydrostatically pressure-tested high-pressure liner-hanger running tools to ensure zero-defect redeployment.</li>
+          <li>Generated and completed digital work orders, managed staging inventory, and collaborated with rig operators to reduce non-productive time (NPT).</li>
+          <li>Streamlined warehouse parts allocation and improved 5S throughput, helping the team build 2–6 fully certified cement heads per day.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- LEADERSHIP & MILITARY -->
+    <section class="component" id="leadership">
+      <span class="via" aria-hidden="true"></span>
+      <p class="ref-tag">SW1 · COMMAND &amp; CONTROL</p>
+      <h2 class="sec-title">Leadership &amp; Military Service</h2>
+
+      <div class="entry-card" data-tags="systems hardware">
+        <div class="entry-head">
+          <span><span class="entry-title">25U Signal Support Systems Specialist</span> — <span class="entry-org">U.S. Army National Guard</span></span>
+          <span class="entry-meta">Secret Clearance</span>
+        </div>
+        <ul>
+          <li>Operated, deployed, and maintained tactical communications networks, radio systems, wire/fiber networks, and secure encryption hardware.</li>
+          <li>Awarded the National Defense Service Medal and Army Service Ribbon.</li>
+        </ul>
+      </div>
+
+      <div class="entry-card" data-tags="systems cad robotics">
+        <div class="entry-head">
+          <span><span class="entry-title">Event Manager &amp; Lead</span> — <span class="entry-org">ASME Chapter, Lone Star College</span></span>
+          <span class="entry-meta">2025 – Present</span>
+        </div>
+        <ul>
+          <li>Manage chapter build budgets, organize campus outreach events, and co-lead Lunabotics robotics initiatives to expand student participation in engineering.</li>
+        </ul>
+      </div>
+
+      <div class="entry-card" data-tags="cpp systems">
+        <div class="entry-head">
+          <span><span class="entry-title">Historian</span> — <span class="entry-org">Computer Science Club, Lone Star College</span></span>
+          <span class="entry-meta">2025 – Present</span>
+        </div>
+        <ul>
+          <li>Enhanced LSC–CyFair STEM engagement by organizing hands-on technical workshops, maintaining public code archives, and documenting club engineering initiatives.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- EDUCATION -->
+    <section class="component" id="education">
+      <span class="via" aria-hidden="true"></span>
+      <p class="ref-tag">Y1 · ACADEMIC TIMING</p>
+      <h2 class="sec-title">Education</h2>
+
+      <div class="entry-card">
+        <div class="entry-head">
+          <span><span class="entry-title">Associate of Science, Engineering Track (Honors College)</span> — <span class="entry-org">Lone Star College</span></span>
+          <span class="entry-meta">Expected Spring 2027</span>
+        </div>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin:8px 0 0;">
+          <strong style="color:var(--copper); font-family:'IBM Plex Mono',monospace; font-size:11.5px;">RELEVANT COURSEWORK:</strong>
+          Programming Fundamentals I &amp; II (C++), General Chemistry I, University Physics I, Calculus II, Macroeconomics
+        </p>
+      </div>
+
+      <div class="entry-card">
+        <div class="entry-head">
+          <span><span class="entry-title">B.S. Electrical Engineering (Transfer Track)</span> — <span class="entry-org">Georgia Institute of Technology</span></span>
+          <span class="entry-meta">Target Class of 2030</span>
+        </div>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin:6px 0 0;">Electrical &amp; Systems Engineering transfer pathway.</p>
+      </div>
+    </section>
+
+    <!-- TECHNICAL SKILLS BOM -->
+    <section class="component" id="skills">
+      <span class="via" aria-hidden="true"></span>
+      <p class="ref-tag">BOM · REV B (INTERACTIVE)</p>
+      <h2 class="sec-title">Technical Skills</h2>
+      <p class="filter-hint">⚡ Click any BOM row below to highlight corresponding engineering projects above:</p>
+      <table class="bom" id="bom-table">
+        <thead>
+          <tr><th scope="col">Category</th><th scope="col">Components &amp; Tools</th></tr>
+        </thead>
+        <tbody>
+          <tr data-filter="cpp">
+            <td class="cat">Programming &amp; Systems</td>
+            <td class="items">C++, Python, Linux (Ubuntu/Pop!_OS), Git/GitHub, ROS 2, Bash, Embedded C</td>
+          </tr>
+          <tr data-filter="hardware">
+            <td class="cat">Hardware &amp; Electronics</td>
+            <td class="items">ESP32, LoRa (915 MHz), Raspberry Pi, Jetson Orin Nano, Arduino/Teensy, 2D LiDAR, I2C/SPI/UART protocols</td>
+          </tr>
+          <tr data-filter="cad">
+            <td class="cat">Design &amp; Prototyping</td>
+            <td class="items">Autodesk Fusion 360 (CAD/CAM), Onshape, 3D printing (FDM/PLA+/PETG-CF/PA612-CF), manual/CNC machining, calipers, micrometers, GD&amp;T</td>
+          </tr>
+          <tr data-filter="testing">
+            <td class="cat">Testing &amp; QA</td>
+            <td class="items">Hydrostatic &amp; pneumatic pressure testing, seal/thread redress, work order tracking (ERP/SAP), 5S, lean QA/QC</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer id="contact">
+    <div style="width:100%;">
+      <div class="foot-links">
+        <a href="mailto:tylacy@my.lonestar.edu">tylacy@my.lonestar.edu</a>
+        <a href="tel:+12817464637">(281) 746-4637</a>
+        <a href="https://github.com/rmrfbot" target="_blank" rel="noopener">github.com/rmrfbot</a>
+        <a href="https://linkedin.com/in/tyler-lacy-3b8148312" target="_blank" rel="noopener">linkedin.com/in/tyler-lacy-3b8148312</a>
+        <a href="resume.pdf" download>resume.pdf</a>
+      </div>
+      <p class="fine" style="margin-top:14px;">
+        Cypress, TX · Deployed on Cloudflare Edge · Interactive WebGL &amp; Canvas Portfolio
+      </p>
+      <p class="fine" style="margin-top:6px; color:var(--text-muted); border-top:1px solid var(--line-soft); padding-top:10px;">
+        <strong style="color:var(--copper);">AI Usage Disclaimer:</strong> Site architecture, interactive Three.js 3D CAD visualization, and automated HTML5 Canvas image processing were co-developed with <strong style="color:var(--amber);">Argon 4 (Gemini)</strong> based on original engineering documentation, hardware builds, and project data by Tyler Lacy.
+      </p>
+    </div>
+  </footer>
+</div>
+
+<!-- LIGHTBOX MODAL -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+  <div class="lightbox-box">
+    <div class="lightbox-head">
+      <span id="lb-title">HARDWARE INSPECTION</span>
+      <button class="cad-btn" id="lb-close">✕ CLOSE [ESC]</button>
+    </div>
+    <div class="lightbox-body" id="lb-body"></div>
+    <div class="lightbox-foot">
+      <span id="lb-caption">Tyler Lacy — Engineering Portfolio</span>
+      <button class="cad-btn" id="lb-download" style="display:none;">↓ Download Processed Image (.PNG)</button>
+    </div>
+  </div>
+</div>
+
+<!-- TERMINAL MODAL -->
+<div class="term-modal" id="term-modal" role="dialog" aria-modal="true">
+  <div class="term-window">
+    <div class="term-bar">
+      <span>tyler@lunabotics-edge:~ (Pop!_OS / zsh)</span>
+      <button class="cad-btn" id="close-term-btn">✕ ESC</button>
+    </div>
+    <div class="term-output" id="term-output">
+      <div class="sys-msg">TylerOS v2.6 Systems Engineering Shell. Type <span style="color:var(--amber)">help</span> for available commands.</div>
+    </div>
+    <div class="term-input-row">
+      <span class="term-prompt">tyler@ee-lead:~$</span>
+      <input type="text" class="term-input" id="term-input" placeholder="type 'help', 'rover', 'clearance', 'skills', or 'contact'..." autocomplete="off">
+    </div>
+  </div>
+</div>
+
+<script>
+  // 1. SVG Trace Draw-in & Scroll Reveal
+  window.addEventListener('DOMContentLoaded', () => {
+    const p = document.getElementById('trace-path');
+    if (p) requestAnimationFrame(() => {
+      p.style.transition = 'stroke-dashoffset 1s ease';
+      p.style.strokeDashoffset = '0';
+    });
+    initPhotoProcessors();
+    initThreeRover();
+  });
+
+  const sections = document.querySelectorAll('.component');
+  const navLinks = document.querySelectorAll('.navlinks a');
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
+  }, { threshold: 0.1 });
+  sections.forEach(s => revealObserver.observe(s));
+
+  const spyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, { rootMargin: '-35% 0px -55% 0px' });
+  sections.forEach(s => spyObserver.observe(s));
+
+  // 2. Automated HTML5 Canvas Photo Cropper & Studio Enhancer
+  function loadImageWithFallback(paths, onSuccess) {
+    let idx = 0;
+    function tryNext() {
+      if (idx >= paths.length) return;
+      const img = new Image();
+      img.onload = () => onSuccess(img);
+      img.onerror = () => { idx++; tryNext(); };
+      img.src = paths[idx];
+    }
+    tryNext();
+  }
+
+  function initPhotoProcessors() {
+    // A) Crop Screenshot 2026-02-06 162535.png (6-person grid) to ONLY Tyler (bottom-center panel)
+    const soloCanvas = document.getElementById('solo-portrait-canvas');
+    const sCtx = soloCanvas.getContext('2d');
+
+    loadImageWithFallback([
+      'Screenshot%202026-02-06%20162535.png',
+      'Screenshot 2026-02-06 162535.png',
+      'Screenshot%202026-02-06%20162535.jpg',
+      'Screenshot 2026-02-06 162535.jpg'
+    ], (officerImg) => {
+      const sx = officerImg.width * 0.345;
+      const sy = officerImg.height * 0.595;
+      const sw = officerImg.width * 0.31;
+      const sh = officerImg.height * 0.395;
+
+      sCtx.filter = 'contrast(1.07) saturate(1.08) brightness(1.03)';
+      sCtx.drawImage(officerImg, sx, sy, sw, sh, 0, 0, soloCanvas.width, soloCanvas.height);
+
+      const grad = sCtx.createRadialGradient(200, 220, 110, 200, 250, 290);
+      grad.addColorStop(0, 'rgba(0,0,0,0)');
+      grad.addColorStop(1, 'rgba(8,17,14,0.42)');
+      sCtx.fillStyle = grad;
+      sCtx.fillRect(0, 0, soloCanvas.width, soloCanvas.height);
+    });
+
+    // B) Enhance D34EB81D-2834-4724-8492-A56B15A05E9B-branded.jpg (ASME Table Photo)
+    const tableCanvas = document.getElementById('enhanced-table-canvas');
+    const tCtx = tableCanvas.getContext('2d');
+
+    loadImageWithFallback([
+      'D34EB81D-2834-4724-8492-A56B15A05E9B-branded.jpg',
+      'D34EB81D-2834-4724-8492-A56B15A05E9B-branded.JPG',
+      'D34EB81D-2834-4724-8492-A56B15A05E9B-branded.png'
+    ], (tableImg) => {
+      tableCanvas.width = tableImg.width;
+      tableCanvas.height = tableImg.height;
+
+      tCtx.filter = 'contrast(1.11) saturate(1.12) brightness(1.05)';
+      tCtx.drawImage(tableImg, 0, 0);
+      tCtx.filter = 'none';
+
+      const cx = tableCanvas.width * 0.54;
+      const cy = tableCanvas.height * 0.36;
+      const lightGrad = tCtx.createRadialGradient(cx, cy, 20, cx, cy, tableCanvas.width * 0.55);
+      lightGrad.addColorStop(0, 'rgba(255, 230, 190, 0.11)');
+      lightGrad.addColorStop(0.45, 'rgba(255, 220, 175, 0.03)');
+      lightGrad.addColorStop(1, 'rgba(6, 14, 11, 0.38)');
+      tCtx.fillStyle = lightGrad;
+      tCtx.fillRect(0, 0, tableCanvas.width, tableCanvas.height);
+    });
+  }
+
+  // 3. Three.js Interactive 3D Lunabotics Rover CAD Viewer
+  function initThreeRover() {
+    const canvas = document.getElementById('rover-canvas');
+    if (!canvas || typeof THREE === 'undefined') return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+    camera.position.set(4.2, 2.8, 4.6);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Lighting
+    scene.add(new THREE.AmbientLight(0xdff5ea, 0.65));
+    const dirLight = new THREE.DirectionalLight(0xffb627, 1.1);
+    dirLight.position.set(6, 10, 5);
+    scene.add(dirLight);
+    const rimLight = new THREE.DirectionalLight(0x34d399, 0.5);
+    rimLight.position.set(-6, 3, -5);
+    scene.add(rimLight);
+
+    // Reference Grid
+    const grid = new THREE.GridHelper(10, 20, 0xc9a24b, 0x1b3026);
+    grid.position.y = -0.85;
+    scene.add(grid);
+
+    // Rover Assembly Group
+    const rover = new THREE.Group();
+    scene.add(rover);
+
+    const mats = [];
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0xc8d0cc, metalness: 0.7, roughness: 0.3 });
+    const deckMat = new THREE.MeshStandardMaterial({ color: 0x8c6239, metalness: 0.2, roughness: 0.75 });
+    const wheelMat = new THREE.MeshStandardMaterial({ color: 0x1a211e, metalness: 0.3, roughness: 0.6 });
+    const copperMat = new THREE.MeshStandardMaterial({ color: 0xc9a24b, metalness: 0.8, roughness: 0.25 });
+    const electronicsMat = new THREE.MeshStandardMaterial({ color: 0x162921, metalness: 0.5, roughness: 0.4 });
+    mats.push(frameMat, deckMat, wheelMat, copperMat, electronicsMat);
+
+    // Chassis Frame
+    const chassis = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.14, 1.5), frameMat);
+    chassis.userData = { basePos: new THREE.Vector3(0, 0, 0), explodeVec: new THREE.Vector3(0, 0, 0) };
+    rover.add(chassis);
+
+    // Electronics Deck & ThinkPad/Relay Bay
+    const deck = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.08, 1.25), deckMat);
+    deck.position.set(0, 0.12, 0);
+    deck.userData = { basePos: deck.position.clone(), explodeVec: new THREE.Vector3(0, 0.55, 0) };
+    rover.add(deck);
+
+    const controllerBox = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.22, 0.65), electronicsMat);
+    controllerBox.position.set(-0.2, 0.27, 0);
+    controllerBox.userData = { basePos: controllerBox.position.clone(), explodeVec: new THREE.Vector3(0, 1.05, 0) };
+    rover.add(controllerBox);
+
+    // 2D LiDAR Mast & Puck
+    const lidarGroup = new THREE.Group();
+    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.45, 16), frameMat);
+    const puck = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.14, 24), copperMat);
+    puck.position.y = 0.25;
+    lidarGroup.add(mast, puck);
+    lidarGroup.position.set(0.65, 0.38, 0);
+    lidarGroup.userData = { basePos: lidarGroup.position.clone(), explodeVec: new THREE.Vector3(0.4, 1.3, 0) };
+    rover.add(lidarGroup);
+
+    // LiDAR Scan Cone
+    const coneGeo = new THREE.ConeGeometry(1.6, 2.2, 32, 1, true);
+    const coneMat = new THREE.MeshBasicMaterial({ color: 0xffb627, wireframe: true, transparent: true, opacity: 0.25 });
+    const lidarCone = new THREE.Mesh(coneGeo, coneMat);
+    lidarCone.rotation.z = -Math.PI / 2;
+    lidarCone.position.set(1.75, 0.63, 0);
+    rover.add(lidarCone);
+
+    // Regolith Excavator Drum (Front)
+    const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 1.35, 18), copperMat);
+    drum.rotation.x = Math.PI / 2;
+    drum.position.set(1.35, -0.05, 0);
+    drum.userData = { basePos: drum.position.clone(), explodeVec: new THREE.Vector3(1.1, 0.2, 0) };
+    rover.add(drum);
+
+    // 4 Drive Wheels
+    const wheelPositions = [
+      { x: -0.95, y: -0.35, z: 0.9, ex: -0.4, ez: 0.75 },
+      { x: 0.95,  y: -0.35, z: 0.9, ex: 0.4,  ez: 0.75 },
+      { x: -0.95, y: -0.35, z: -0.9, ex: -0.4, ez: -0.75 },
+      { x: 0.95,  y: -0.35, z: -0.9, ex: 0.4,  ez: -0.75 }
+    ];
+    const wheels = [];
+    wheelPositions.forEach(wp => {
+      const wGroup = new THREE.Group();
+      const tire = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.46, 0.28, 24), wheelMat);
+      tire.rotation.x = Math.PI / 2;
+      const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.3, 12), copperMat);
+      hub.rotation.x = Math.PI / 2;
+      wGroup.add(tire, hub);
+      wGroup.position.set(wp.x, wp.y, wp.z);
+      wGroup.userData = { basePos: wGroup.position.clone(), explodeVec: new THREE.Vector3(wp.ex, -0.25, wp.ez) };
+      rover.add(wGroup);
+      wheels.push(wGroup);
+    });
+
+    // Mouse / Touch Orbit Controls
+    let isDragging = false, prevX = 0, prevY = 0;
+    let spherical = { theta: 0.75, phi: 1.05, radius: 5.8 };
+    let autoRotate = true;
+
+    function updateCam() {
+      camera.position.x = spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
+      camera.position.y = spherical.radius * Math.cos(spherical.phi);
+      camera.position.z = spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
+      camera.lookAt(0, 0.1, 0);
+    }
+    updateCam();
+
+    canvas.addEventListener('pointerdown', e => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
+    window.addEventListener('pointerup', () => { isDragging = false; });
+    window.addEventListener('pointermove', e => {
+      if (!isDragging) return;
+      spherical.theta += (e.clientX - prevX) * 0.008;
+      spherical.phi = Math.max(0.3, Math.min(1.48, spherical.phi - (e.clientY - prevY) * 0.008));
+      prevX = e.clientX; prevY = e.clientY;
+      updateCam();
+    });
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      spherical.radius = Math.max(3.2, Math.min(9.5, spherical.radius + e.deltaY * 0.004));
+      updateCam();
+    }, { passive: false });
+
+    // Toolbar Controls
+    document.getElementById('explode-slider').addEventListener('input', e => {
+      const t = parseFloat(e.target.value) / 100;
+      rover.children.forEach(obj => {
+        if (obj.userData && obj.userData.basePos) {
+          obj.position.copy(obj.userData.basePos).addScaledVector(obj.userData.explodeVec, t);
+        }
+      });
+    });
+
+    document.getElementById('btn-wireframe').addEventListener('click', e => {
+      const active = e.target.classList.toggle('active');
+      mats.forEach(m => m.wireframe = active);
+    });
+
+    document.getElementById('btn-lidar').addEventListener('click', e => {
+      const active = e.target.classList.toggle('active');
+      lidarCone.visible = active;
+    });
+
+    document.getElementById('btn-autorotate').addEventListener('click', e => {
+      autoRotate = e.target.classList.toggle('active');
+    });
+
+    // Animation Loop
+    function animate() {
+      requestAnimationFrame(animate);
+      if (autoRotate && !isDragging) {
+        spherical.theta += 0.0035;
+        updateCam();
+      }
+      drum.rotation.z -= 0.025;
+      wheels.forEach(w => w.rotation.z -= 0.015);
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      if (!canvas.clientWidth) return;
+      camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    });
+  }
+
+  // 4. Interactive BOM Skill Filter
+  const bomRows = document.querySelectorAll('#bom-table tbody tr');
+  const projectCards = document.querySelectorAll('.entry-card[data-tags]');
+  let activeFilter = null;
+
+  bomRows.forEach(row => {
+    row.addEventListener('click', () => {
+      const f = row.getAttribute('data-filter');
+      if (activeFilter === f) {
+        activeFilter = null;
+        bomRows.forEach(r => r.classList.remove('active-filter'));
+        projectCards.forEach(c => c.classList.remove('highlighted'));
+      } else {
+        activeFilter = f;
+        bomRows.forEach(r => r.classList.toggle('active-filter', r === row));
+        projectCards.forEach(c => {
+          const tags = c.getAttribute('data-tags') || '';
+          c.classList.toggle('highlighted', tags.includes(f));
+        });
+      }
+    });
+  });
+
+  // 5. Lightbox & Export Processed Portrait
+  const lightbox = document.getElementById('lightbox');
+  const lbBody = document.getElementById('lb-body');
+  const lbTitle = document.getElementById('lb-title');
+  const lbCaption = document.getElementById('lb-caption');
+  const lbDownload = document.getElementById('lb-download');
+
+  function openLightbox(title, contentEl, allowDownloadCanvas) {
+    lbTitle.textContent = title;
+    lbCaption.textContent = title;
+    lbBody.innerHTML = '';
+    lbBody.appendChild(contentEl);
+    if (allowDownloadCanvas) {
+      lbDownload.style.display = 'inline-block';
+      lbDownload.onclick = () => {
+        const link = document.createElement('a');
+        link.download = 'tyler-lacy-processed.png';
+        link.href = allowDownloadCanvas.toDataURL('image/png');
+        link.click();
+      };
+    } else {
+      lbDownload.style.display = 'none';
+    }
+    lightbox.classList.add('open');
+  }
+
+  document.getElementById('hero-portrait-card').addEventListener('click', () => {
+    const srcCanvas = document.getElementById('solo-portrait-canvas');
+    const img = new Image();
+    img.src = srcCanvas.toDataURL('image/png');
+    openLightbox('Tyler Lacy — Solo Cropped Officer Portrait (ASME)', img, srcCanvas);
+  });
+
+  document.querySelectorAll('.gal-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const title = item.getAttribute('data-title');
+      const type = item.getAttribute('data-type');
+      if (type === 'canvas-table') {
+        const srcCanvas = document.getElementById('enhanced-table-canvas');
+        const img = new Image();
+        img.src = srcCanvas.toDataURL('image/png');
+        openLightbox(title, img, srcCanvas);
+      } else {
+        const img = new Image();
+        img.src = item.getAttribute('data-img');
+        openLightbox(title, img, null);
+      }
+    });
+  });
+
+  document.getElementById('lb-close').addEventListener('click', () => lightbox.classList.remove('open'));
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.remove('open'); });
+
+  // 6. Interactive Engineering Terminal (~ key)
+  const termModal = document.getElementById('term-modal');
+  const termInput = document.getElementById('term-input');
+  const termOutput = document.getElementById('term-output');
+
+  function toggleTerminal(force) {
+    const isOpen = typeof force === 'boolean' ? force : !termModal.classList.contains('open');
+    termModal.classList.toggle('open', isOpen);
+    if (isOpen) setTimeout(() => termInput.focus(), 50);
+  }
+
+  document.getElementById('open-term-btn').addEventListener('click', () => toggleTerminal(true));
+  document.getElementById('close-term-btn').addEventListener('click', () => toggleTerminal(false));
+
+  window.addEventListener('keydown', e => {
+    if (e.key === '`' || e.key === '~') {
+      if (document.activeElement !== termInput) {
+        e.preventDefault();
+        toggleTerminal();
+      }
+    } else if (e.key === 'Escape') {
+      lightbox.classList.remove('open');
+      toggleTerminal(false);
+    }
+  });
+
+  const COMMANDS = {
+    help: "Available commands: <span style='color:var(--amber)'>rover</span>, <span style='color:var(--amber)'>clearance</span>, <span style='color:var(--amber)'>skills</span>, <span style='color:var(--amber)'>education</span>, <span style='color:var(--amber)'>contact</span>, <span style='color:var(--amber)'>clear</span>",
+    rover: "[LUNABOTICS ROVER LOG] Served as Team Lead for NASA Lunabotics autonomous regolith excavator. Completed SRR, PDR, and CDR milestones; integrated 4-motor drivetrain, relay power distribution, and 2D LiDAR navigation.",
+    clearance: "[SECURITY STATUS] U.S. Army National Guard — 25U Signal Support Systems Specialist. Secret Security Clearance (Inactive). National Defense Service Medal & Army Service Ribbon.",
+    skills: "[BOM REV B] C++, Python, ROS 2, Linux (Pop!_OS/Ubuntu), ESP32, 915MHz LoRa, Fusion 360, Onshape, FDM 3D Printing, Hydrostatic Pressure Testing.",
+    education: "[ACADEMICS] Lone Star College (A.S. Engineering Track, Honors College, Spring 2027) -> Georgia Institute of Technology (B.S. Electrical Engineering pathway).",
+    contact: "Email: tylacy@my.lonestar.edu | Phone: (281) 746-4637 | Location: Cypress, TX | GitHub: github.com/rmrfbot"
+  };
+
+  termInput.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const raw = termInput.value.trim();
+    const cmd = raw.toLowerCase();
+    termInput.value = '';
+    if (!cmd) return;
+
+    if (cmd === 'clear') {
+      termOutput.innerHTML = '';
+      return;
+    }
+
+    const echo = document.createElement('div');
+    echo.innerHTML = `<span style="color:var(--emerald)">tyler@ee-lead:~$</span> <span class="cmd-echo">${raw}</span>`;
+    termOutput.appendChild(echo);
+
+    const resp = document.createElement('div');
+    resp.className = 'sys-msg';
+    resp.innerHTML = COMMANDS[cmd] || `Command not recognized: '${raw}'. Type <span style="color:var(--amber)">help</span> for available commands.`;
+    termOutput.appendChild(resp);
+    termOutput.scrollTop = termOutput.scrollHeight;
+  });
+</script>
+
+</body>
+</html>
